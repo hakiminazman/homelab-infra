@@ -12,3 +12,4 @@ provider "proxmox" {
   api_token = "${var.proxmox_token_id}=${var.proxmox_token_secret}"
   insecure  = true
 }
+# Trigger pipeline test
