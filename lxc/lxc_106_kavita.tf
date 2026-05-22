@@ -60,7 +60,7 @@ resource "proxmox_virtual_environment_container" "kavita" {
   }
 
   mount_point {
-    path    = "/mnt/storage"
-    volume  = "/mnt/storage"
+    path   = "/mnt/storage"
+    volume = "/mnt/storage"
   }
 }
