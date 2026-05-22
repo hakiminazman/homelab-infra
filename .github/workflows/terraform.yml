@@ -1,0 +1,72 @@
+name: Terraform
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'lxc/**'
+  push:
+    branches: [main]
+    paths:
+      - 'lxc/**'
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Init
+        working-directory: lxc
+        run: terraform init
+
+      - name: Terraform Format Check
+        working-directory: lxc
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        working-directory: lxc
+        run: terraform validate
+
+  plan:
+    name: Plan
+    runs-on: self-hosted
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Init
+        working-directory: lxc
+        run: terraform init
+
+      - name: Terraform Plan
+        working-directory: lxc
+        run: terraform plan
+        env:
+          TF_VAR_proxmox_endpoint: ${{ secrets.PROXMOX_ENDPOINT }}
+          TF_VAR_proxmox_token_id: ${{ secrets.PROXMOX_TOKEN_ID }}
+          TF_VAR_proxmox_token_secret: ${{ secrets.PROXMOX_TOKEN_SECRET }}
+          TF_VAR_proxmox_node: ${{ secrets.PROXMOX_NODE }}
+
+  apply:
+    name: Apply
+    runs-on: self-hosted
+    needs: plan
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Init
+        working-directory: lxc
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: lxc
+        run: terraform apply -auto-approve
+        env:
+        env:
+          TF_VAR_proxmox_endpoint: ${{ secrets.PROXMOX_ENDPOINT }}
+          TF_VAR_proxmox_token_id: ${{ secrets.PROXMOX_TOKEN_ID }}
+          TF_VAR_proxmox_token_secret: ${{ secrets.PROXMOX_TOKEN_SECRET }}
+          TF_VAR_proxmox_node: ${{ secrets.PROXMOX_NODE }}
