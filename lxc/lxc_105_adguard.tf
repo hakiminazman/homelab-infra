@@ -67,10 +67,10 @@ resource "proxmox_virtual_environment_container" "adguard" {
     type             = "debian"
   }
 
-console {
-  enabled   = true
-  tty_count = 2
-  type      = "tty"
-}
+  console {
+    enabled   = true
+    tty_count = 2
+    type      = "tty"
+  }
 
 }
